@@ -1,0 +1,112 @@
+#ifndef __MACRO_TASK_H__
+#define __MACRO_TASK_H__
+
+#include "Types.h"
+
+class Task {
+    /***************************************************************************
+     * 任务状态相关的属性
+     **************************************************************************/
+    
+public:
+    /** 任务的状态*/
+    int state;
+    
+    /***************************************************************************
+     * 任务的优先级
+     **************************************************************************/
+    int mPriority;
+    
+    /***************************************************************************
+     * 任务的错误信息
+     **************************************************************************/
+
+    /** 任务的错误代码 */
+    int errCode;
+    /** 任务的错误信息 */
+    String   *errMessage;
+    //NSString *e;
+    
+    /***************************************************************************
+     * 任务的通用属性
+     **************************************************************************/
+    /** 任务携带的中间数据 */
+    Object *mData;
+    /** 数据长度*/
+    int mDataLength;
+    /** 后期处理任务数据/结果时, 需要的额外参数 */
+    Object *mParam;
+    /** 任务类型: XML, image, video, GET, POST等等 */
+    String* mType;
+    /** soap action*/
+    String* mAction;
+    
+    /***************************************************************************
+     * 任务的拥有者和处理者
+     **************************************************************************/
+    /** 发起任务的元素 */
+    Object *mElement;
+    /** 任务的拥有者, 它不一定是发起任务的元素 */
+    Object *mOwner;
+
+public:
+    /** 任务状态定义 */
+    static const int STATE_START      = 1;   //任务开始执行
+    static const int STATE_INPROGRESS = 2;    //下载中
+    static const int STATE_COMPLETE   = 3;    //任务处理完成
+    static const int STATE_FAILED     = 4;    //任务处理失败
+    static const int STATE_CANCELED   = 5;    //任务取消
+    
+    static const int DEFAULT_PRIORITY = 1;
+    
+    /** function*/
+    Task();
+    Task(Task* task);
+    Task(Object *srcElement);
+    Task(Object *srcElement, String *url);
+    Task(Object *srcElement, Object *taskData, Object *param);
+    Task(Object *srcElement, String *url, String *taskType, Object *param);
+    //Task(Object *srcElement, Object *taskData, String *taskType, Object *param);
+    Task(Object *srcElement, Object *taskData, String *taskType, Object *param, Object *taskOwner);
+    virtual ~Task();
+
+    virtual void reset();
+    int getState();
+    void setState(int state);
+    Boolean isComplete();
+    virtual Boolean isCanceled();
+    Boolean isFailed();
+    void setCode(int err);
+    void setCode(int err, String* msg);
+    int getErrCode();
+    void setErrMessage(String* msg);
+    String* getErrMessage();
+    String* getErrCodeMessage();
+    void setPriority(int priority);
+    int getPriority();
+    Object *getParameter();
+    void setParameter(Object *parameter);
+    Object *getData();
+    void setData(Object *data);
+    Object *getOwner();
+    void setOwner(Object *parent);
+    Object *getElement();
+    void setElement(Object *element);
+    String* getType();
+    void setType(String *type);
+    virtual void callback(int initiator, int operation);
+    String* toString();
+    void setDataLength(int);
+    int getDataLength();
+    void setAction(String* action);
+    String* getAction();
+
+    void start();
+    void complete();
+    void cancel();
+    void fail();    
+    void fail(int err, String* msg);
+    void fail(int err, const char* msg);
+};
+
+#endif

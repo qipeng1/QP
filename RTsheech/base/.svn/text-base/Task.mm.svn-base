@@ -1,0 +1,324 @@
+//
+//  Task.m
+//  YueTao
+//
+//  Created by wangchunhui on 11-6-20.
+//  Copyright 2011年 __MyCompanyName__. All rights reserved.
+//
+
+#include "Task.h"
+#include "C.h"
+#include "IEventHandler.h"
+
+/***************************************************************************
+ * 任务初始化接口
+ **************************************************************************/
+
+Task::Task() {
+    mType = NULL;
+    reset();
+}
+
+Task::Task(Task* task) {
+    if (!task) return;
+    errMessage = NULL;
+    mElement = task->mElement;
+    mType = new String(task->mType);
+    mData = task->mData;
+    mParam = task->mParam;
+    mOwner = task->mOwner;
+    mPriority = task->mPriority;
+    state = task->getState();
+    errCode = task->getErrCode();
+    errMessage = task->getErrCodeMessage();
+    mAction = task->getAction();
+
+}
+
+Task::Task(Object *srcElement) {
+    mElement = srcElement;
+    mType = NULL;
+    mData = NULL;
+    mParam = NULL;
+    
+    mOwner = NULL;
+    mPriority = DEFAULT_PRIORITY;
+    errMessage = NULL;
+    mAction = NULL;
+
+    reset();        
+}
+
+// URL 复用了 task.data 来保存
+Task::Task(Object *srcElement, String* url) {
+    //Task(srcElement, url, new String(HTTP_GET), NULL, NULL);
+    mElement = srcElement;
+    mType = new String("GET");
+    mData = url;
+    mParam = nil;
+    mOwner = nil;
+    mPriority = DEFAULT_PRIORITY;
+    errMessage = NULL;
+    mAction = NULL;
+    reset();
+}
+
+// URL 复用了 task.data 来保存
+Task::Task(Object *srcElement, String* url, String* taskType, Object *param) {
+//    Task(srcElement, url, taskType, param, NULL);
+//    String *type = new String("GET");
+//    
+//    if (!taskType)
+//        setType(type);
+    mElement = srcElement;
+    if (taskType == NULL) {
+        mType = new String("GET");
+    } else {
+        mType = new String(taskType);
+    }
+    mData = url;
+    mParam = param;
+
+    mOwner = url;
+    mPriority = DEFAULT_PRIORITY;
+    errMessage = NULL;
+    mAction = NULL;
+    reset();
+}
+
+Task::Task(Object *srcElement, Object *taskData, Object *param) {
+    Task(srcElement, taskData, (String *) NULL, param, NULL);
+}
+
+Task::Task(Object *srcElement, Object *taskData, 
+             String* taskType, Object *param, Object *taskOwner) {
+    mElement = srcElement;
+    mType = new String((String *) taskType);
+    mData = taskData;
+    mParam = param;
+
+    mOwner = taskOwner;
+    mPriority = DEFAULT_PRIORITY;
+    errMessage = NULL;
+    mAction = NULL;
+    reset();        
+}
+
+Task::~Task() {
+    if (errMessage) delete errMessage;
+    errMessage = NULL;
+//    if (mType) delete mType;
+//    mType = NULL;
+}
+
+/***************************************************************************
+ * 任务状态机管理
+ **************************************************************************/
+
+void Task::reset() {
+    state = STATE_START;
+    errCode = 0;
+    errMessage = (String *) NULL;
+}
+
+int Task::getState() {
+    return state;
+}
+
+void Task::setState(int state) {
+    this->state = state;
+}
+
+/**
+ * 设置任务为正在处理中状态
+ */
+void Task::start() {
+    state = STATE_INPROGRESS;
+}
+
+/**
+ * 设置任务为已经完成状态
+ */
+void Task::complete() {
+    state = STATE_COMPLETE;
+}
+
+Boolean Task::isComplete() {
+    return state == STATE_COMPLETE;
+}
+
+void Task::cancel() {
+    state = STATE_CANCELED;
+}
+
+Boolean Task::isCanceled() {
+    return state == STATE_CANCELED;
+}
+
+void Task::fail() {
+    state = STATE_FAILED;
+}
+
+void Task::fail(int err, String* msg) {
+    state = STATE_FAILED;
+    setCode(err, msg);
+}
+
+void Task::fail(int err, const char* msg) {
+    state = STATE_FAILED;
+    setCode(err, new String(msg));
+}
+
+Boolean Task::isFailed() {
+    return state == STATE_FAILED;
+}
+
+void Task::setCode(int err) {
+    errCode = err;
+}
+
+void Task::setCode(int err, String* msg) {
+    errCode = err;
+    setErrMessage(msg);
+}
+
+int Task::getErrCode() {
+    return errCode;
+}
+
+void Task::setErrMessage(String* msg) {
+    //    if (errMessage == null)
+    //        errMessage = msg;
+    //    else
+    //        errMessage = errMessage + "; and, " + msg;
+}
+
+String* Task::getErrMessage() {
+    return errMessage;
+}
+
+String* Task::getErrCodeMessage() {
+    //return "[" + errCode + "]: " + errMessage;
+    return null;
+}
+
+/***************************************************************************
+ * 任务的操作接口
+ **************************************************************************/
+
+void Task::setPriority(int priority) {
+    mPriority = priority;
+}
+
+int Task::getPriority() {
+    return mPriority;
+}
+
+/**
+ * @return the parameter
+ */
+Object *Task::getParameter() {
+    return mParam;
+}
+
+/**
+ * @param parameter the parameter to set
+ */
+void Task::setParameter(Object *parameter) {
+    mParam = parameter;
+}
+
+/**
+ * @return the data
+ */
+Object *Task::getData() {
+    return mData;
+}
+
+/**
+ * @param data the data to set
+ */
+void Task::setData(Object *data) {
+    this->mData = data;
+}
+
+/**
+ * @return the parent
+ */
+Object *Task::getOwner() {
+    return mOwner;
+}
+
+/**
+ * @param parent the parent to set
+ */
+void Task::setOwner(Object *parent) {
+    mOwner = parent;
+}
+
+/**
+ * @return the element
+ */
+Object *Task::getElement() {
+    return mElement;
+}
+
+/**
+ * @param element the element to set
+ */
+void Task::setElement(Object *element) {
+    mElement = element;
+}
+
+/**
+ * @return the type
+ */
+String* Task::getType() {
+    return mType;
+}
+
+/**
+ * @param type the type to set
+ */
+void Task::setType(String* type) {
+    mType = type;
+}
+
+void Task::callback(int initiator, int operation) {
+    if (mOwner == NULL) return;
+    
+    @try {
+        IEventHandler* boss = (IEventHandler*) mOwner;
+        boss->handleTask(initiator, this, operation);
+    } @catch (NSException* e) {
+        return;
+    }
+}
+
+#if 0
+// @Override
+String* Task::toString() {
+    //        return "Task - element = " + this.mElement + ", "
+    //        + "data = " + this.mData + ", "
+    //        + "type = " + this.mType + ", "
+    //        + "param = " + this.mParam + ", "
+    //        + "state = " + this.state;
+    return NULL;
+}
+#endif
+
+void Task::setDataLength(int len) {
+    mDataLength = len;
+}
+
+int Task::getDataLength() {
+    return mDataLength;
+}
+
+void Task::setAction(String* action) {
+    mAction = action;
+}
+
+String* Task::getAction() {
+    return mAction;
+}

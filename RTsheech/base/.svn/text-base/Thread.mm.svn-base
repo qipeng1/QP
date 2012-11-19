@@ -1,0 +1,141 @@
+//
+//  Thread.m
+//  YueTao
+//
+//  Created by wangchunhui on 11-6-20.
+//  Copyright 2011年 __MyCompanyName__. All rights reserved.
+//
+
+#import "Thread.h"
+#include "L.h"
+//#include "OCThread.h"
+
+Thread::Thread() {
+}
+
+Thread::Thread(String* name) {
+    Vector<Object>* queue = new Vector<Object>();
+    NSCondition* lock = [[NSCondition alloc] init];
+    Thread(name, queue, lock);
+}
+
+Thread::Thread(String* name, Object* task, NSCondition* lock) {
+    if (task == NULL) {
+        task = new Vector<Object>();        
+    }
+    mThread = [[OCThread alloc] init];
+    [mThread setPriority:0.5];
+    [mThread setName:name];
+    [mThread setQueue:(Vector<Task> *)task];
+    [mThread setLoop:this];
+    [mThread setLock:lock];
+}
+
+Thread::~Thread() {
+    if (mThread) {
+        [mThread release];
+    }
+}
+
+void Thread::kill() {
+    [mThread cancel];
+}
+
+// 休眠
+void Thread::sleep(int ms) {
+    if (ms > 0) {
+        [NSThread sleepForTimeInterval:(ms/1000)];
+    }
+}
+
+// 暂停线程
+void Thread::stop() {
+    [mThread stop];
+}
+
+// 恢复线程
+void Thread::resume() {
+    [mThread resume];
+}
+
+// 线程是否有剩余任务要处理
+int Thread::numOfTasks() {
+    if (mThread) {
+        return [mThread numOfTasks];
+    }
+    return 0;
+}
+
+// 添加任务
+void Thread::addTask(Task* task) {
+    if (task == NULL) {
+        //TODO: need a log here.
+        return;
+    }
+    [mThread addTask:task];
+}
+
+// 清空任务列表
+void Thread::removeAllTasks() {
+    [mThread removeAllTasks];
+}
+
+// 启动线程
+void Thread::start() {
+    start(MEDIUM_PRIORITY);
+}
+
+// 启动线程
+void Thread::start(int priority) {
+    //mThread = [[OCThread alloc] init];
+    if (priority <= MAX_PRIORITY &&
+        priority >= MIN_PRIORITY) {
+        [mThread setPriority:priority];
+    }
+    else {
+        [mThread setPriority:MEDIUM_PRIORITY];
+    }
+    [mThread startThread];
+}
+
+/**
+ * 删除某一个任务
+ *
+ * @param task 需要被删除的任务
+ */
+void Thread::removeTask(Task* task) {
+    //if (task == NULL) return;
+
+    [mThread removeTask:task];
+}
+
+/**
+ * 删除属于某一个元素的所有任务
+ *
+ * @param parent 属于该元素的任务会被删除
+ */
+void Thread::removeAllTasks(Object* parent) {
+    if (parent == NULL) return;
+
+    [mThread removeAllTasks:parent];
+}
+
+String* Thread::getName() {
+    return [mThread getName];
+}
+
+Boolean Thread::isReadyToExit() {
+    return [mThread isReadyToExit];
+}
+
+Object* Thread::getCurTask() {
+    return [mThread getCurTask];
+}
+
+void Thread::mainLoop(Task* task) {
+    ;
+}
+
+void Thread::setLock(NSCondition* lock) {
+    [mThread setLock:lock];
+}

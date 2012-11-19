@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Outsourcing/!svn/ver/28/WanQianMall/trunk/WQMall/src/base
+END
+Thread.mm
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/Outsourcing/!svn/ver/10/WanQianMall/trunk/WQMall/src/base/Thread.mm
+END
+IEvent.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/Outsourcing/!svn/ver/10/WanQianMall/trunk/WQMall/src/base/IEvent.h
+END
+IThread.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/Outsourcing/!svn/ver/10/WanQianMall/trunk/WQMall/src/base/IThread.h
+END
+Task.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/Outsourcing/!svn/ver/10/WanQianMall/trunk/WQMall/src/base/Task.h
+END
+Task.mm
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/Outsourcing/!svn/ver/10/WanQianMall/trunk/WQMall/src/base/Task.mm
+END
+Thread.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/Outsourcing/!svn/ver/28/WanQianMall/trunk/WQMall/src/base/Thread.h
+END
+IEventHandler.h
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/Outsourcing/!svn/ver/10/WanQianMall/trunk/WQMall/src/base/IEventHandler.h
+END

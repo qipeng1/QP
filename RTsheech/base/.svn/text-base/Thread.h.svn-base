@@ -1,0 +1,54 @@
+#ifndef __MACRO_THREAD_H__
+#define __MACRO_THREAD_H__ 
+
+#import <Foundation/Foundation.h>
+#include "Types.h"
+#include "Task.h"
+#include "OCThread.h"
+//class OCThread;
+
+#define HIGH_PRIORITY  (1.0)
+#define MEDIUM_PRIORITY (0.5)
+#define LOW_PRIORITY (0.0)
+#define MAX_PRIORITY (1.0)
+#define MIN_PRIORITY (0)
+
+
+class Thread {
+private:
+    // for OC
+public:
+    OCThread* mThread;
+
+    String* testthread;
+public:
+    Thread();
+    Thread(String * name);
+    Thread(String * name, Object* queue, NSCondition* lock);
+    ~Thread();
+    void run();
+
+    static void sleep(int ms);
+    void stop();
+    void resume();
+    int numOfTasks();
+    void addTask(Task* task);
+    void removeAllTasks();
+    void removeTask(Task* task);
+    void removeAllTasks(Object* parent);
+    String * getName();
+    Boolean isReadyToExit();
+
+public:
+    virtual void mainLoop(Task* task);
+    Object* getCurTask();
+    void kill();
+    void start();
+    void start(int priority);
+    void setTestThread(String* name) {
+        testthread = name;
+    }
+    void setLock(NSCondition* lock);
+};
+
+#endif

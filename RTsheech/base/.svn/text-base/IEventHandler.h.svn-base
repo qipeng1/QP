@@ -1,0 +1,28 @@
+#ifndef __MACRO_IEVENTHANDLER_H__
+#define __MACRO_IEVENTHANDLER_H__
+
+class Task;
+//
+//  IEventHandler.h
+//  Yuetao3
+//
+//  Created by admin on 11-7-25.
+//  Copyright 2011年 __MyCompanyName__. All rights reserved.
+//
+
+class IEventHandler {
+public:
+    /**
+     * 接收由其它模块处理完成任务后的事件
+     *
+     * @param initiator 发起此次调用的模块ID
+     * @param task 处理的任务
+     * @param param 附加的参数
+     */
+    virtual void handleTask(int initiator, Task* task, int operation){
+        
+    }
+
+};
+
+#endif
